@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(nextButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(RetryButton))
         correctAnswer = 0
         score = 0
         btnTap = 0
@@ -49,12 +49,15 @@ class ViewController: UIViewController {
             btnTap = 0
             question()
             }
+    @objc func RetryButton () {
+        viewDidLoad()
+    }
     @IBAction func BtnTap(_ sender: UIButton) { //connect action for all buttons
         btnTap += 1
         if btnTap == 1 {
             if sender.tag == self.correctAnswer {
                 self.score += 1
-                self.Alert(title: "Correct", message: "Your answer is correct.Total Score : \(score)")
+                self.Alert(title: "Correct", message: "Your answer is correct.")
                 
             }
             else {
@@ -64,22 +67,34 @@ class ViewController: UIViewController {
                 else {
                     score = 0
                 }
-                self.Alert(title: "Wrong", message: "Your answer is wrong. Total Score : \(score)")
+                self.Alert(title: "Wrong", message: "Your answer is wrong.")
             }
         }
         else {
-            Alert(title: "Error", message: "You have no chance.")
+            let alert = UIAlertController(title: "Error", message: "You have no chance.", preferredStyle: UIAlertController.Style.alert)
+            let okBtn = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+            alert.addAction(okBtn)
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
     func Alert(title: String,message: String) {
                 let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
-                let okButton = UIAlertAction(title: "OK", style: UIAlertAction.Style.default)
-                let retryButton = UIAlertAction(title: "Retry", style: UIAlertAction.Style.default) { action in
-                    self.viewDidLoad()
+        let nextButton = UIAlertAction(title: "Next", style: UIAlertAction.Style.default) { action in
+            self.nextButton()
+        }
+                let okButton = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) { action in
+                    let alertOk = UIAlertController(title: "Game Over", message:  "Total Score : \(self.score)", preferredStyle: UIAlertController.Style.alert)
+                    let retryButton = UIAlertAction(title: "Retry", style: UIAlertAction.Style.default) { action in
+                        self.viewDidLoad()
+                    }
+                    let okBtn = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+                    alertOk.addAction(retryButton)
+                    alertOk.addAction(okBtn)
+                    self.present(alertOk, animated: true, completion: nil)
                 }
-                alert.addAction(retryButton)
                 alert.addAction(okButton)
+                alert.addAction(nextButton)
                 self.present(alert, animated: true, completion: nil)
             }
 
